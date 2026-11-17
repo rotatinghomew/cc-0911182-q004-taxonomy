@@ -1,0 +1,48 @@
+{
+  "batch_id": "sample-delivery",
+  "tables": {
+    "topics": [
+      {
+        "topic_id": "root",
+        "parent_id": "",
+        "label": "全部"
+      },
+      {
+        "topic_id": "music",
+        "parent_id": "root",
+        "label": "音乐"
+      },
+      {
+        "topic_id": "heritage",
+        "parent_id": "root",
+        "label": "非遗"
+      }
+    ],
+    "contents": [
+      {
+        "content_id": "c1",
+        "title": "古乐",
+        "primary_topic": "music"
+      },
+      {
+        "content_id": "c2",
+        "title": "民俗",
+        "primary_topic": "heritage"
+      }
+    ],
+    "distribution": [
+      {
+        "fact_id": "f1",
+        "day": "2026-11-09",
+        "content_id": "c1",
+        "copies": 60
+      },
+      {
+        "fact_id": "f2",
+        "day": "2026-11-09",
+        "content_id": "c2",
+        "copies": 40
+      }
+    ]
+  }
+}

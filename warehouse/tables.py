@@ -1,0 +1,1 @@
+TABLES = {'topics': (['topic_id', 'parent_id', 'label'], ['topic_id']), 'contents': (['content_id', 'title', 'primary_topic'], ['content_id']), 'distribution': (['fact_id', 'day', 'content_id', 'copies'], ['fact_id'])}
