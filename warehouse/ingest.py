@@ -1,6 +1,26 @@
 from .contracts import normalize
 from .storage import canonical, digest, transaction
-from .tables import TABLES
+from .tables import CLASSIFICATION_TABLES, TABLES
+
+
+def _classification_touched(tables):
+    return any(table in CLASSIFICATION_TABLES for table in tables)
+
+
+def _check_frozen(connection, table, row):
+    """已被集市发布的分类版本不能通过新增行静默改写。"""
+    version_id = row['version_id']
+    frozen = connection.execute(
+        'SELECT count(*) FROM classification_marts WHERE version_id=?',
+        [version_id]).fetchone()[0]
+    if frozen:
+        raise ValueError('已发布的分类版本不能改写：' + version_id)
+
+
+def _version_exists(connection, version_id):
+    return connection.execute(
+        'SELECT 1 FROM classification_versions WHERE version_id=?',
+        [version_id]).fetchone() is not None
 
 
 def ingest(connection, payload):
@@ -30,6 +50,16 @@ def ingest(connection, payload):
             if prior[0] != signature:
                 raise ValueError('相同批号内容不一致')
             return {'batch_id': batch, 'inserted': 0, 'replayed': True}
+        if _classification_touched(payload['tables']):
+            # 分类行的版本必须已存在，或在本批次内一并声明。
+            declared = {row['version_id']
+                        for row in payload['tables'].get('classification_versions', [])}
+            for table in ('classification_topics', 'classification_parents',
+                          'content_topic_shares'):
+                for row in payload['tables'].get(table, []):
+                    if row['version_id'] not in declared and not _version_exists(
+                            connection, row['version_id']):
+                        raise ValueError('分类版本不存在：' + row['version_id'])
         inserted = 0
         for table, columns, keys, row in prepared:
             existing = connection.execute('SELECT payload FROM source_rows WHERE table_name=? AND row_key=?',
@@ -39,6 +69,8 @@ def ingest(connection, payload):
                 if existing[0] != serialized:
                     raise ValueError('业务主键内容冲突：' + table)
                 continue
+            if table in CLASSIFICATION_TABLES:
+                _check_frozen(connection, table, row)
             names = ','.join('"' + column + '"' for column in columns)
             marks = ','.join('?' for column in columns)
             connection.execute('INSERT INTO "' + table + '" (' + names + ') VALUES (' + marks + ')',

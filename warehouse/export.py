@@ -32,6 +32,17 @@ def export_tables(connection, destination, revision):
             count = connection.execute('SELECT count(*) FROM "' + table + '"').fetchone()[0]
             manifest['tables'][table] = {'file': filename, 'rows': count,
                 'sha256': hashlib.sha256(output.read_bytes()).hexdigest(), 'keys': list(keys)}
+        # 分类版本随业务表导出，回读方可以据此判断使用了哪一版分类。
+        versions = connection.execute(
+            'SELECT version_id,label FROM classification_versions ORDER BY version_id').fetchall()
+        manifest['classification_versions'] = [
+            {'version_id': row[0], 'label': row[1]} for row in versions]
+        releases = connection.execute(
+            'SELECT release_id,version_id,source_digest FROM classification_marts '
+            'ORDER BY release_id').fetchall()
+        manifest['classification_marts'] = [
+            {'release_id': row[0], 'version_id': row[1], 'source_digest': row[2]}
+            for row in releases]
         manifest['batches'] = [row[0] for row in connection.execute(
             'SELECT batch_id FROM receipts ORDER BY batch_id').fetchall()]
         (stage / 'manifest.json').write_text(canonical(manifest), encoding='utf-8')

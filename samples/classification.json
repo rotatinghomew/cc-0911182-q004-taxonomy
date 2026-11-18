@@ -1,0 +1,80 @@
+{
+  "batch_id": "sample-classification-2026-11",
+  "tables": {
+    "classification_versions": [
+      {
+        "version_id": "v2026-11",
+        "label": "2026年11月分类口径"
+      }
+    ],
+    "classification_topics": [
+      {
+        "version_id": "v2026-11",
+        "topic_id": "root",
+        "label": "全部"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "arts",
+        "label": "文艺"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "music",
+        "label": "音乐"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "heritage",
+        "label": "非遗"
+      }
+    ],
+    "classification_parents": [
+      {
+        "version_id": "v2026-11",
+        "topic_id": "arts",
+        "parent_id": "root"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "music",
+        "parent_id": "arts"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "music",
+        "parent_id": "root"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "heritage",
+        "parent_id": "arts"
+      },
+      {
+        "version_id": "v2026-11",
+        "topic_id": "heritage",
+        "parent_id": "root"
+      }
+    ],
+    "content_topic_shares": [
+      {
+        "version_id": "v2026-11",
+        "content_id": "c1",
+        "topic_id": "music",
+        "share": "0.6"
+      },
+      {
+        "version_id": "v2026-11",
+        "content_id": "c1",
+        "topic_id": "heritage",
+        "share": "0.4"
+      },
+      {
+        "version_id": "v2026-11",
+        "content_id": "c2",
+        "topic_id": "heritage",
+        "share": "1"
+      }
+    ]
+  }
+}

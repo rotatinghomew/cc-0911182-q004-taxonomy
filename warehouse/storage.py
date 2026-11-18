@@ -20,7 +20,8 @@ def records(connection, query, parameters=None):
 
 
 def canonical(value):
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+    # 分类份额以 DECIMAL 保存，摘要时按其稳定文本形式处理，避免浮点化。
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), default=str)
 
 
 @contextmanager
